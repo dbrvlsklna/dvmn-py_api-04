@@ -67,8 +67,6 @@ save_images_helpers.py
 
 ```python fetch_daily_astronomy_images.py /path/to/my_images 3```
 
-python name_of_script.py /path/to/my_images
-
 ### Скачивание цветных изображений планеты (EPIC)
 
 Для запуска срипта вам необходимо ввести путь директории, куда вы планируете сохранять изображения иуказать количество запрашиваемых изображений.
