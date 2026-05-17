@@ -51,7 +51,7 @@ def main():
     )
     parser.add_argument(
         "-d",
-        "--delay",
+        "--delay_seconds",
         type=int,
         default=14400,
         help="Интервал публикации и ожидания в секундах (по умолчанию: 4 часа/14400 секунд)",
@@ -64,7 +64,7 @@ def main():
         chat_id = os.environ["TG_CHAT_ID"]
         bot = telegram.Bot(token=token)
         if args.auto_posting:
-            auto_posting_with_delay(chat_id, bot, img_dir, args.delay)
+            auto_posting_with_delay(chat_id, bot, img_dir, args.delay_seconds)
         else:
             post_photo(chat_id, bot, img_dir, img_path)
     except KeyError as error:
