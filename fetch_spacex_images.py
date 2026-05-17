@@ -8,7 +8,7 @@ from save_images_helpers import save_image, get_image_extension
 BASE_SPACEX_API_URL = "https://api.spacexdata.com/v5/launches"
 
 
-def fetch_spacex_last_launch(save_path, proxies, launch_id=None):
+def fetch_spacex_images(save_path, proxies, launch_id=None):
     if launch_id is None:
         launch_id = "latest"
     spacex_api_url = f"{BASE_SPACEX_API_URL}/{launch_id}"
@@ -28,7 +28,7 @@ def fetch_spacex_last_launch(save_path, proxies, launch_id=None):
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser(
-        description="Скрипт для скачивания фото запусков с сайта SpaceX"
+        description="Скрипт для скачивания фото запусков ракет с сайта SpaceX"
     )
     parser.add_argument("dir_path", help="Путь до директории для сохранения фото")
     parser.add_argument("-id", "--launch_id", help="Идентификатор запуска")
@@ -38,7 +38,7 @@ def main():
             "http": os.environ["HTTP_PROXY"],
             "https": os.environ["HTTP_PROXY"],
         }
-        fetch_spacex_last_launch(args.dir_path.strip(), proxies, args.launch_id)
+        fetch_spacex_images(args.dir_path.strip(), proxies, args.launch_id)
     except KeyError as error:
         exit(f"Переменная окружения не существует: {error}")
     except ValueError as error:
