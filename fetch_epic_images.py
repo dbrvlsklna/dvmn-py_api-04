@@ -12,15 +12,17 @@ EPIC_DOWNLOAD_IMAGE_API_URL = "https://api.nasa.gov/archive/natural"
 
 def fetch_epic_images(token, proxies, save_path):
     params = {"api_key": token}
-    images_metadata = requests.get(EPIC_API_URL, proxies=proxies, params=params)
-    images_metadata.raise_for_status()
+    response = requests.get(EPIC_API_URL, proxies=proxies, params=params)
+    response.raise_for_status()
+    images_metadata = response.json()
     for image_number, image in enumerate(images_metadata):
         date = datetime.strptime(image["date"], "%Y-%m-%d %H: %M: %S")
         image_name = image["image"]
         image_download_link = f"{EPIC_DOWNLOAD_IMAGE_API_URL}/{date.year}/{date.month}/{date.day}/png/{image_name}.png"
         image_response = requests.get(image_download_link, proxies=proxies)
         image_response.raise_for_status()
-        save_image(save_path, image_response.content, image_name)
+        full_image_name = f"{image_name}.png"
+        save_image(save_path, image_response.content, full_image_name)
     return images_metadata
 
 
@@ -33,15 +35,14 @@ def main():
         "dir_path", help="Путь до директории для сохранения изображений"
     )
     args = parser.parse_args()
+    dir_path = args.dir_path.strip()
+    token = os.environ.get("NASA_TOKEN")
+    if not token:
+        exit("Не задана переменная окружения NASA_TOKEN")
+    proxy_url = os.environ.get("HTTP_PROXY")
+    proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
     try:
-        token = os.environ["NASA_TOKEN"]
-        proxies = {
-            "http": os.environ["HTTP_PROXY"],
-            "https": os.environ["HTTP_PROXY"],
-        }
-        fetch_epic_images(token, proxies, args.dir_path.strip())
-    except KeyError as error:
-        exit(f"Переменная окружения не существует: {error}")
+        fetch_epic_images(token, proxies, dir_path)
     except requests.exceptions.HTTPError as error:
         exit(f"Не удалось получить данные: {error}")
     except requests.exceptions.RequestException as error:

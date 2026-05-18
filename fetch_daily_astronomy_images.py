@@ -14,8 +14,8 @@ def fetch_daily_astronomy_images(token, proxies, count, save_path):
     response.raise_for_status()
     daily_images_links = [item.get("url") for item in response.json()]
     for link_number, link in enumerate(daily_images_links):
-        extension = get_image_extension(link)
-        image_response = requests.get(link, proxies=proxies)
+        extension = get_image_extension(link, proxies=proxies)
+        image_response = requests.get(link)
         image_response.raise_for_status()
         image_name = f"nasa_apod_{link_number}.{extension}"
         save_image(save_path, image_response.content, image_name)
@@ -32,24 +32,20 @@ def main():
     )
     parser.add_argument("count", help="Количество изображений для скачивания")
     args = parser.parse_args()
+    count = args.count.strip()
+    dir_path = args.dir_path.strip()
+    token = os.environ.get("NASA_TOKEN")
+    if not token:
+        exit("Не задана переменная окружения NASA_TOKEN")
+    proxy_url = os.environ.get("HTTP_PROXY")
+    proxies = {"http": proxy_url, "https": proxy_url} if proxy_url else None
     try:
-        token = os.environ["NASA_TOKEN"]
-        proxies = {
-            "http": os.environ["HTTP_PROXY"],
-            "https": os.environ["HTTP_PROXY"],
-        }
-        fetch_daily_astronomy_images(
-            token, proxies, args.count.strip(), args.dir_path.strip()
-        )
-    except KeyError as error:
-        exit(f"Переменная окружения не существует: {error}")
+        fetch_daily_astronomy_images(token, proxies, count, dir_path)
     except requests.exceptions.HTTPError as error:
         exit(f"Не удалось получить данные: {error}")
     except requests.exceptions.RequestException as error:
-        exit(f"Возникла ошибка: {error}")
+        exit(f"Ошибка при обращении к API NASA: {error}")
 
 
 if __name__ == "__main__":
     main()
-
-
