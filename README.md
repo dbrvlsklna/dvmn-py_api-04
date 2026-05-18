@@ -99,6 +99,6 @@ NASA_TOKEN=ваш_api_ключ_nasa
 
 ```python tgbot.py /path/to/my_images -a```
 
-Бесконечная автопубликация с задержкой:
+Бесконечная автопубликация с заданной пользователем задержкой:
 
 ```python tgbot.py /path/to/my_images -a -d 60```
